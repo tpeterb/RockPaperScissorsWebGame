@@ -1,2 +1,2 @@
 # RockPaperScissorsWebGame
-[Link az alkalmazáshoz](shrek.unideb.hu/~tpeterb)
+[Link az alkalmazáshoz](http://shrek.unideb.hu/~tpeterb)
