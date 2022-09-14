@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kő-papír-olló</title>
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-image: url('images/bg.jpg');
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 1200px;
+            background-color: antiquewhite;
+            box-shadow: 20px 20px 10px #000;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('images/header-bg3.png');
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            height: 300px;
+            background-size: cover;
+        }
+
+        header p {
+            background-color: black;
+            padding: 10px;
+            border: 2px solid yellow;
+            border-radius: 10px;
+        }
+
+        .content {
+            background-image: url('images/content-bg.jpg');
+            padding: 5px;
+        }
+
+        .results {
+            margin: 10px auto;
+            width: 50%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            text-align: center;
+        }
+
+        .results td, .results th {
+            border: 2px solid #000;
+        }
+
+        .results tr:first-child {
+            background-color: goldenrod;
+        }
+
+        .results tr:last-child {
+            background-color: red;
+            color: whitesmoke;
+        }
+
+        .results tr {
+            height: 40px;
+        }
+
+        .imageContainer {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        .choosableImage {
+            width: 20%;
+        }
+
+        .buttonContainer {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        #newGameButton {
+            padding: 5px;
+            font-size: 1.4rem;
+            border: 2px solid #000;
+            border-radius: 10px;
+            background-color: rgb(255, 99, 71);
+        }
+
+        #newGameButton:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+            color: lightblue;
+            cursor: pointer;
+        }
+
+        .instructions {
+            margin: 0 5px 5px 5px;
+            text-align: center;
+            font-style: bold;
+            font-size: 1.4rem;
+            color: white;
+            background-color: black;
+            padding: 6px;
+            border: 1px solid yellow;
+            border-radius: 5px;
+        }
+
+        .resultTextContainer {
+            margin: 0 5px 5px 5px;
+            text-align: center;
+            font-style: bold;
+            font-size: 1.4rem;
+            color: white;
+            display: none;
+            background-color: darkred;
+            border: 2px dashed #000;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p>Kő papír olló</p>
+        </header>
+        <div class="content">
+            <div class="instructions">Válasszon egyet az alábbi képek közül kattintással!</div>
+            <div class="resultTextContainer"></div>
+            <div class="imageContainer">
+                <img id="rock" src="images/rock.jpg" alt="rock" class="rockImage choosableImage">
+                <img id="paper" src="images/paper.jpg" alt="paper" class="paperImage choosableImage">
+                <img id="scissor" src="images/scissor.jpg" alt="scissor" class="scissorImage choosableImage">
+            </div>
+            <div class="buttonContainer">
+                <button id="newGameButton">Új játék</button>
+            </div>
+            <table class="results">
+                <tr>
+                    <th class="topLeft">Nyert</th>
+                    <th>Vesztett</th>
+                    <th class="topRight">Döntetlen</th>
+                </tr>
+                <tr>
+                    <td class="numberOfWins bottomLeft"></td>
+                    <td class="numberOfLosses"></td>
+                    <td class="numberOfDraws bottomRight"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        const rockImage = document.getElementById("rock");
+
+        const paperImage = document.getElementById("paper");
+
+        const scissorImage = document.getElementById("scissor");
+
+        const winCell = document.querySelector(".numberOfWins");
+
+        const drawCell = document.querySelector(".numberOfDraws");
+
+        const lossCell = document.querySelector(".numberOfLosses");
+
+        const resultTextContainer = document.querySelector(".resultTextContainer");
+
+        const newGameButton = document.getElementById("newGameButton");
+
+        const choosableImages = document.querySelectorAll(".choosableImage");
+
+        var numberOfWins = 0, numberOfDraws = 0, numberOfLosses = 0;
+
+        winCell.innerHTML = numberOfWins;
+        drawCell.innerHTML = numberOfDraws;
+        lossCell.innerHTML = numberOfLosses;
+
+        addImageClickListeners();
+        addImageHoverEffects();
+
+        newGameButton.addEventListener("click", (event) => {
+            addImageClickListeners();
+            addImageHoverEffects();
+            resultTextContainer.style.display = "none";
+        });
+
+        function rockClickHandler(event) {
+            handleGame("rock");
+        }
+
+        function paperClickHandler(event) {
+            handleGame("paper");
+        }
+
+        function scissorClickHandler(event) {
+            handleGame("scissor");
+        }
+
+        function handleGame(playerChoice) {
+
+            var computerChoice = "";
+            const randomNumber = Math.random();
+            console.log(randomNumber);
+            if (randomNumber <= 0.33) {
+                computerChoice = "rock";
+            } else if (randomNumber > 0.33 && randomNumber <= 0.66) {
+                computerChoice = "paper";
+            } else {
+                computerChoice = "scissor";
+            }
+
+            console.log(computerChoice);
+            
+            switch (playerChoice) {
+                case "rock":
+                    if (computerChoice == "rock") { // DRAW
+                        handleDraw();
+                        setResultingMessage("Kő", "Döntetlen");
+                    } else if (computerChoice == "paper") { // LOSS
+                        handleLoss();
+                        setResultingMessage("Papír", "Vereség");
+                    } else { // WIN
+                        handleWin();
+                        setResultingMessage("Olló", "Győzelem");
+                    }
+                    break;
+                case "paper":
+                    if (computerChoice == "rock") { // WIN
+                        handleWin();
+                        setResultingMessage("Kő", "Győzelem");
+                    } else if (computerChoice == "paper") { // DRAW
+                        handleDraw();
+                        setResultingMessage("Papír", "Döntetlen");
+                    } else { // LOSS
+                        handleLoss();
+                        setResultingMessage("Olló", "vereség");
+                    }
+                    break;
+                case "scissor":
+                    if (computerChoice == "rock") { //LOSS
+                        handleLoss();
+                        setResultingMessage("Kő", "Vereség");
+                    } else if (computerChoice == "paper") { // WIN
+                        handleWin();
+                        setResultingMessage("Papír", "Győzelem");
+                    } else { // DRAW
+                        handleDraw();
+                        setResultingMessage("Olló", "Döntetlen");;
+                    }
+                    break;
+            }
+
+            removeImageClickListeners();
+            removeImageHoverEffects();
+
+        }
+
+        function handleWin() {
+            numberOfWins++;
+            winCell.innerHTML = numberOfWins;
+        }
+
+        function handleDraw() {
+            numberOfDraws++;
+            drawCell.innerHTML = numberOfDraws;
+        }
+
+        function handleLoss() {
+            numberOfLosses++;
+            lossCell.innerHTML = numberOfLosses;
+        }
+
+        function setResultingMessage(choiceOfComputer, result) {
+            resultTextContainer.style.display = "block";
+            resultTextContainer.innerHTML = `A számítógép választása: ${choiceOfComputer}, az eredmény: ${result}`;
+        }
+
+        function removeImageClickListeners() {
+            rockImage.removeEventListener("click", rockClickHandler);
+            paperImage.removeEventListener("click", paperClickHandler);
+            scissorImage.removeEventListener("click", scissorClickHandler);
+        }
+
+        function addImageClickListeners() {
+            rockImage.addEventListener("click", rockClickHandler);
+            paperImage.addEventListener("click", paperClickHandler);
+            scissorImage.addEventListener("click", scissorClickHandler);
+        }
+
+        function imageMouseEnterListener(event) {
+            event.target.style.borderRadius = "100%";
+            event.target.style.cursor = "crosshair";
+        }
+
+        function imageMouseLeaveListener(event) {
+            event.target.style.borderRadius = "0";
+            event.target.style.cursor = "default";
+        }
+
+        function addImageHoverEffects() {
+            choosableImages.forEach((image) => {
+                image.addEventListener("mouseenter", imageMouseEnterListener);
+                image.addEventListener("mouseleave", imageMouseLeaveListener);
+            });
+        }
+
+        function removeImageHoverEffects() {
+            choosableImages.forEach((image) => {
+                image.removeEventListener("mouseenter", imageMouseEnterListener);
+                image.removeEventListener("mouseenter", imageMouseEnterListener);
+            });
+        }
+
+    </script>
+
+</body>
+</html>
